@@ -1,38 +1,73 @@
 import * as Yup from 'yup';
-import { useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import React from 'react';
+// import { Link as RouterLink } from 'react-router-dom';
 // form
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
-import { Link, Stack, Alert, IconButton, InputAdornment } from '@mui/material';
+import { Stack, Alert, InputAdornment } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // routes
-import { PATH_AUTH } from '../../../routes/paths';
+import PropTypes from 'prop-types';
+import { useSnackbar } from 'notistack';
+// import { PATH_AUTH } from '../../../routes/paths';
 // hooks
 import useAuth from '../../../hooks/useAuth';
 import useIsMountedRef from '../../../hooks/useIsMountedRef';
 // components
 import Iconify from '../../../components/Iconify';
-import { FormProvider, RHFTextField, RHFCheckbox } from '../../../components/hook-form';
+import { FormProvider, RHFTextField } from '../../../components/hook-form';
 
 // ----------------------------------------------------------------------
 
-export default function LoginForm() {
+LoginForm.propTypes = {
+  phoneNumber: PropTypes.number,
+  setPhoneNumber: PropTypes.func,
+};
+
+const style = {
+  '& .MuiFilledInput-root': {
+    borderRadius: '10px',
+    height: "54px",
+    '&::after': {
+      display: 'none',
+    },
+    '&::before': {
+      display: 'none',
+    },
+  },
+  "& .MuiInputAdornment-root": {
+    margin: "0 16px 0 0 !important",
+    width: "36px",
+    height: "36px",
+    background: "#fff",
+    borderRadius: "8px"
+  },
+  "& input": {
+    padding: "0"
+  },
+  fontSize: "20px"
+};
+
+export default function LoginForm({ setPhoneNumber }) {
   const { login } = useAuth();
+  const { enqueueSnackbar } = useSnackbar();
 
   const isMountedRef = useIsMountedRef();
 
-  const [showPassword, setShowPassword] = useState(false);
+  // const [showPassword, setShowPassword] = useState(false);
+
+  const phoneRegExp =
+    /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
 
   const LoginSchema = Yup.object().shape({
-    email: Yup.string().email('Email must be a valid email address').required('Email is required'),
-    password: Yup.string().required('Password is required'),
+    mobile: Yup.string().matches(phoneRegExp, 'Phone number is not valid').required('Mobile Number is required.'),
+    // password: Yup.string().required("Password is required"),
   });
 
   const defaultValues = {
-    email: 'demo@minimals.cc',
-    password: 'demo1234',
+    mobile: '',
+    // password: 'demo1234',
     remember: true,
   };
 
@@ -50,51 +85,41 @@ export default function LoginForm() {
 
   const onSubmit = async (data) => {
     try {
-      await login(data.email, data.password);
+      setPhoneNumber(data.mobile);
+      // const res = await login(data.mobile, '+91');
+
+      // if (res.message) {
+      //   enqueueSnackbar(res.message);
+      // }
     } catch (error) {
       console.error(error);
-
+      setError('afterSubmit', { ...error, message: error.message });
       reset();
-
-      if (isMountedRef.current) {
-        setError('afterSubmit', { ...error, message: error.message });
-      }
     }
   };
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-      <Stack spacing={3}>
+      <Stack spacing={3} sx={{ my: 2, mx: 4 }}>
         {!!errors.afterSubmit && <Alert severity="error">{errors.afterSubmit.message}</Alert>}
 
-        <RHFTextField name="email" label="Email address" />
-
         <RHFTextField
-          name="password"
-          label="Password"
-          type={showPassword ? 'text' : 'password'}
+          name="mobile"
+          placeholder="Enter your Mobile Number"
+          variant="filled"
+          type="number"
+          sx={style}
           InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
-                  <Iconify icon={showPassword ? 'eva:eye-fill' : 'eva:eye-off-fill'} />
-                </IconButton>
-              </InputAdornment>
-            ),
+            startAdornment: <InputAdornment position="start"><Iconify icon={'mdi:user-outline'} sx={{ fontSize: "36px" }} /></InputAdornment>,
           }}
         />
       </Stack>
 
-      <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ my: 2 }}>
-        <RHFCheckbox name="remember" label="Remember me" />
-        <Link component={RouterLink} variant="subtitle2" to={PATH_AUTH.resetPassword}>
-          Forgot password?
-        </Link>
+      <Stack spacing={3} sx={{ my: 2, mx: 4 }}>
+        <LoadingButton fullWidth size="large" type="submit" variant="contained" loading={isSubmitting}>
+          Get OTP <Iconify icon={'octicon:arrow-right-16'} sx={{ fontSize: "20px", marginLeft: "5px" }} />
+        </LoadingButton>
       </Stack>
-
-      <LoadingButton fullWidth size="large" type="submit" variant="contained" loading={isSubmitting}>
-        Login
-      </LoadingButton>
     </FormProvider>
   );
 }

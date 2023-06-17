@@ -1,10 +1,10 @@
+/* eslint-disable import/no-unresolved */
 // @mui
 import { styled } from '@mui/material/styles';
-import { Box, Link, Container, Typography } from '@mui/material';
+import { Box, Typography, Stack } from '@mui/material';
 // layouts
-import LogoOnlyLayout from '../../layouts/LogoOnlyLayout';
-// components
-import Page from '../../components/Page';
+import PropTypes from 'prop-types';
+import Image from 'src/components/Image';
 // sections
 import { VerifyCodeForm } from '../../sections/auth/verify-code';
 
@@ -22,34 +22,48 @@ const ContentStyle = styled('div')(({ theme }) => ({
 
 // ----------------------------------------------------------------------
 
-export default function VerifyCode() {
-  return (
-    <Page title="Verify Code">
-      <LogoOnlyLayout />
+VerifyCode.propTypes = {
+  phoneNumber: PropTypes.string,
+};
 
-      <Container>
+export default function VerifyCode({ phoneNumber }) {
+  return (
+
+      <>
         <ContentStyle sx={{ textAlign: 'center' }}>
+        <Stack direction="column" alignItems="center">
+          <Image src={`/logo/logo_jrl.svg`} sx={{ width: 134, height: 60 }} />
+          {/* <Button
+            size="small"
+            onClick={() => setPhoneNumber(null)}
+            startIcon={<Iconify icon={'eva:arrow-ios-back-fill'} width={20} height={20} />}
+            sx={{ mb: 3 }}
+          >
+            Back
+          </Button> */}
           <Typography variant="h3" paragraph>
-            Please check your email!
+            Please Verify OTP
           </Typography>
 
           <Typography sx={{ color: 'text.secondary' }}>
-            We have emailed a 6-digit confirmation code to acb@domain, please enter the code in below box to verify your
-            email.
+            We have sent you a 6 digit confirmation code to <br />
+            +91 {phoneNumber?.slice(0, 2)}*** ***{phoneNumber?.slice(phoneNumber.length - 3, phoneNumber.length - 1)},
+            please enter the code in below box to <br />
+            verify your Number.
           </Typography>
+          </Stack>
 
-          <Box sx={{ mt: 5, mb: 3 }}>
-            <VerifyCodeForm />
+          <Box sx={{ mt: 2, mb: 3 }}>
+            <VerifyCodeForm phoneNumber={phoneNumber} />
           </Box>
 
-          <Typography variant="body2">
+          {/* <Typography variant="body2">
             Don’t have a code? &nbsp;
             <Link variant="subtitle2" onClick={() => {}}>
               Resend code
             </Link>
-          </Typography>
+          </Typography> */}
         </ContentStyle>
-      </Container>
-    </Page>
+      </>
   );
 }

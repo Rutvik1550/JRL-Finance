@@ -11,6 +11,7 @@ import typography from './typography';
 import breakpoints from './breakpoints';
 import componentsOverride from './overrides';
 import shadows, { customShadows } from './shadows';
+import components from './components';
 
 // ----------------------------------------------------------------------
 
@@ -32,6 +33,7 @@ export default function ThemeProvider({ children }) {
       direction: themeDirection,
       shadows: isLight ? shadows.light : shadows.dark,
       customShadows: isLight ? customShadows.light : customShadows.dark,
+      components
     }),
     [isLight, themeDirection]
   );

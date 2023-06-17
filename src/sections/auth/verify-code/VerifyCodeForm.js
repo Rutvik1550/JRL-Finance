@@ -15,7 +15,7 @@ import { FormProvider } from '../../../components/hook-form';
 
 // ----------------------------------------------------------------------
 
-export default function VerifyCodeForm() {
+export default function VerifyCodeForm({ phoneNumber }) {
   const navigate = useNavigate();
 
   const { enqueueSnackbar } = useSnackbar();
@@ -117,7 +117,7 @@ export default function VerifyCodeForm() {
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-      <Stack spacing={3}>
+      <Stack spacing={3} sx={{ my: 2, mx: 4 }}>
         <Stack direction="row" spacing={2} justifyContent="center">
           {Object.keys(values).map((name, index) => (
             <Controller
@@ -137,8 +137,8 @@ export default function VerifyCodeForm() {
                     sx: {
                       p: 0,
                       textAlign: 'center',
-                      width: { xs: 36, sm: 56 },
-                      height: { xs: 36, sm: 56 },
+                      width: { xs: 30, sm: 48 },
+                      height: { xs: 30, sm: 48 },
                     },
                   }}
                 />
@@ -152,10 +152,11 @@ export default function VerifyCodeForm() {
             Code is required
           </FormHelperText>
         )}
-
-        <LoadingButton fullWidth size="large" type="submit" variant="contained" loading={isSubmitting} sx={{ mt: 3 }}>
-          Verify
-        </LoadingButton>
+        <Stack sx={{ mx: "20px !important" }}>
+          <LoadingButton fullWidth size="large" type="submit" variant="contained" loading={isSubmitting}>
+            Verify
+          </LoadingButton>
+        </Stack>
       </Stack>
     </FormProvider>
   );
